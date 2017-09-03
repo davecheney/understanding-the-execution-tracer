@@ -1,6 +1,6 @@
 # Usage
 
-This slide deck and supporting material is part of the [_Understanding the Execution Tracer_](http://dave.cheney.net/training) workshop course by Dave Cheney.
+This slide deck and supporting material is part of the [_Understanding the Execution Tracer_](http://dave.cheney.net/training) workshop by Dave Cheney.
 
 # Installation
 
