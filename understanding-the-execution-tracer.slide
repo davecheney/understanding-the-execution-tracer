@@ -1,0 +1,41 @@
+High Performance Go
+Novosibirsk
+24 Sept 2017
+
+Dave Cheney
+dave@cheney.net
+http://dave.cheney.net/
+@davecheney
+
+* License and Materials
+
+This presentation is licensed under the [[https://creativecommons.org/licenses/by-sa/4.0/][Creative Commons Attribution-ShareAlike 4.0 International]] licence.
+
+The materials for this presentation are available on GitHub:
+
+.link https://github.com/davecheney/understanding-the-execution-tracer
+
+You are encouraged to remix, transform, or build upon the material, providing you give appropriate credit and distribute your contributions under the same license.
+
+If you have suggestions or corrections to this presentation, please raise [[https://github.com/davecheney/understanding-the-execution-tracer/issues][an issue on the GitHub project]].
+
+* Agenda
+
+This workshop is aimed at development teams who are building production Go applications intended for high scale deployment.
+
+Today we are going to cover five areas:
+
+- What does performance mean, what is possible?
+- Benchmarking
+- Performance measurement and profiling
+- Memory management and GC tuning
+- Concurrency
+
+After each section we'll have time for questions.
+
+* One more thing ...
+
+This isn't a lecture, it's a conversation.
+
+If you don't understand something, or think what you're hearing is incorrect, please ask.
+
