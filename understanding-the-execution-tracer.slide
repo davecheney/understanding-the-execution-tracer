@@ -1,6 +1,6 @@
-High Performance Go
+Understanding the Go execution tracer
 Novosibirsk
-24 Sept 2017
+24 Sep 2017
 
 Dave Cheney
 dave@cheney.net
@@ -15,27 +15,106 @@ The materials for this presentation are available on GitHub:
 
 .link https://github.com/davecheney/understanding-the-execution-tracer
 
+The code samples are licensed by, and copywrite of, their respective authors.
+
 You are encouraged to remix, transform, or build upon the material, providing you give appropriate credit and distribute your contributions under the same license.
 
 If you have suggestions or corrections to this presentation, please raise [[https://github.com/davecheney/understanding-the-execution-tracer/issues][an issue on the GitHub project]].
 
+* Introduction
+
+This is a presentation about the Go execution tracer.
+
+The execution tracer was added in Go 1.5 and for the next year or so remained under documented, and under used until last year.
+
+Unlike sample based profiling, the execution tracer is _integrated_ into the Go runtime, so it knows not just what a Go program is doing, but _why_.
+
 * Agenda
 
-This workshop is aimed at development teams who are building production Go applications intended for high scale deployment.
+This workshop is aimed at developers who are looking to improve the performance, or diagnose perfromance issues, in their Go applications.
 
-Today we are going to cover five areas:
-
-- What does performance mean, what is possible?
-- Benchmarking
-- Performance measurement and profiling
-- Memory management and GC tuning
-- Concurrency
+- What is execution tracing, why do we need it?
+- Excution tracer basics.
+- Diagnosis with the execution tracer.
+- Conclusion.
 
 After each section we'll have time for questions.
 
 * One more thing ...
 
-This isn't a lecture, it's a conversation.
+This is a workshop, not a lecture. It's 💯 to ask questions.
 
-If you don't understand something, or think what you're hearing is incorrect, please ask.
+If you don't understand something, or think what you're hearing is incorrect, please speak up.
+
+* What is the execution tracer, why do we need it?
+
+* What is the execution tracer, why do we need it?
+
+I think its easiest to explain what the execution tracer does, and why it's important by looking at a piece of code where the profiler, `go`tool`pprof` performs poorly.
+
+* mandelbrot.go (example)
+
+The `examples/mandelbrot` directory contains a simple mandelbrot generator. This code is derived from [[https://github.com/campoy/mandelbrot][Francesc Campoy's mandelbrot package]].
+
+ cd examples/mandelbrot
+ go build && ./mandelbrot
+
+If we build it, then run it, it generates something like this
+
+.image examples/mandelbrot/mandelbrot.png _ 320
+
+* How long does it take?
+
+So, how long does this program take to generate a 1024 x 1024 pixel image?
+
+The simplest way to know is to use something like `time(1)`.
+
+ % time ./mandelbrot
+ real    0m1.654s
+ user    0m1.630s
+ sys     0m0.015s
+
+_Note:_ Don't use `time`go`run`mandebrot.go` or you'll time how long it takes to _compile_ the program as well as run it.
+
+* What is the program doing?
+
+So, in this example the program took 1.6 seconds to generate the mandelbrot and write to to a png.
+
+Is that good? Could we make it faster?
+
+One way to answer that question would be to use Go's built in pprof support to profile the program.
+
+Let's try that.
+
+* Generating the profile
+
+To turn generate a profile we need to either
+
+1. Use the `runtime/pprof` package directly.
+2. Use a wrapper like `github.com/pkg/profile` to automate this.
+
+* Generating a profile with `runtime/pprof`
+
+To show you that there's no magic, let's modify the program to write a CPU profile to `os.Stdout`.
+_
+
+
+* Tracing vs Profiling
+
+Profiling tools like pprof are _sample_based_. They periodically interrupt your program and record what it is doing a that 
+
+
+* ho
+
+
+
+* More resources
+
+- Rhys presentations (gophercon, dotGo)
+- Dave Cheney, 7 ways to profile
+- High performance Go workshop.
+
+* Conclusion
+
+That's it! Now you know everything about the execution tracer.
 
