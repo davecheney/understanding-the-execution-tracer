@@ -334,7 +334,7 @@ This is because the channel is unbuffered. An unbuffered channel cannot send unt
 
 What we see here is a lot of latency introduced by the unbuffered channel. There are lots of stops and starts inside hte scheduler, and potentially locks and mutexes while sleeping to wait for work, this is why we see the `sys` time higher.
 
-* Using buffered channels (cont.)
+* Using buffered channels
 
 .code examples/mandelbrot-buffered/mandelbrot.go /BUFSTART OMIT/,/BUFEND OMIT/
 
@@ -347,6 +347,23 @@ What we see here is a lot of latency introduced by the unbuffered channel. There
  user    0m2.150s
  sys     0m0.121s
 
+Which is pretty close to the per row mode above.
+
+* Using buffered channels (cont.)
+
+Using a buffered channel the trace showed us that:
+
+- The producer doesn't have to wait for a worker to arrive, it can fill up the channel quickly
+
+Using this method we got nearly the same speed using a channel to hand off work per pixel than we did previously scheduling on goroutine per row.
+
+_Exercise_: modify `nWorkersFillImg` to work per row. Time the result and analyse the trace.
+
+* Break
+
+* Mandelbrot microservice
+
+It's 2017, generating mandelbrots is pointless unless you can offer them on the internet as a web sevice.
 
 
 
@@ -355,6 +372,7 @@ What we see here is a lot of latency introduced by the unbuffered channel. There
 - Rhys presentations (gophercon, dotGo)
 - Dave Cheney, 7 ways to profile
 - High performance Go workshop.
+- Ivan Daniluk 
 
 * Conclusion
 
