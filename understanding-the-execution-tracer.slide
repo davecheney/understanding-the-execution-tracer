@@ -363,18 +363,72 @@ _Exercise_: modify `nWorkersFillImg` to work per row. Time the result and analys
 
 * Mandelbrot microservice
 
-It's 2017, generating mandelbrots is pointless unless you can offer them on the internet as a web sevice.
+It's 2017, generating Mandelbrots is pointless unless you can offer them on the internet as a web sevice.
+
+Thus, I present to you, _Mandelweb_
+
+ % go run examples/mandelweb/mandelweb.go                             
+ 2017/09/17 15:29:21 listening on http://127.0.0.1:8080/
+
+.link http://127.0.0.1:8080/mandelbrot
+
+* Tracing running applications
+
+In the previous example we ran the trace over the whole program.
+
+As you saw, traces can be very large, even for small amounts of time, so collecting trace data continually would generate far too much data. Also, tracing can have an impact on the speed of your program, especially if there is a lot of activity.
+
+What we want is a way to collect a short trace from a running program.
+
+Fortuntately, the `net/http/pprof` package has just such a facility.
+
+* Collecting traces via http
+
+Hopefully everyone knows about the `net/http/pprof` package.
+
+When imported
+
+ import _ "net/http/pprof"
+
+It will register tracing and profiling routes with `http.DefaultServeMux`. Since Go 1.5 this includes the trace profiler.
+
+We can grab a five second trace from mandelweb with `curl` (or `wget`)
+
+ curl -o trace.out http://127.0.0.1:8080/debug/pprof/trace?seconds=5 
+
+* Generating some load
+
+The previous example was interesting, but an idle webserver has, by definition, no performance issues. We need to generate some load. For this I'm using [[https://github.com/rakyll/hey][`hey` by JBD]].
+
+ go get -u github.com/rakyll/hey
+
+Let's start with one request per second.
+
+ hey -c 1 -n 1000 -q 1  http://127.0.0.1:8080/mandelbrot
+
+And with that running, in another window collect the trace
+
+ % curl -o trace.out http://127.0.0.1:8080/debug/pprof/trace?seconds=5                        
+   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current                                      
+                                 Dload  Upload   Total   Spent    Left  Speed                                        
+ 100 66169    0 66169    0     0  13233      0 --:--:--  0:00:05 --:--:-- 17390                                       
+ % go tool trace trace.out                                                                    
+ 2017/09/17 16:09:30 Parsing trace...                      
+ 2017/09/17 16:09:30 Serializing trace...                  
+ 2017/09/17 16:09:30 Splitting trace...                    
+ 2017/09/17 16:09:30 Opening browser. Trace viewer is listening on http://127.0.0.1:60301   
 
 
-
-* More resources
-
-- Rhys presentations (gophercon, dotGo)
-- Dave Cheney, 7 ways to profile
-- High performance Go workshop.
-- Ivan Daniluk 
 
 * Conclusion
 
 That's it! Now you know everything about the execution tracer.
+
+* More resources
+
+- Rhys Hiltner, [[https://www.youtube.com/watch?v=mmqDlbWk_XA][Go's execution tracer]] (dotGo 2016)
+- Rhys Hiltner, [[https://www.youtube.com/watch?v=V74JnrGTwKA][An Introduction to "go tool trace"]] (GopherCon 2017)
+- Dave Cheney, [[https://www.youtube.com/watch?v=2h_NFBFrciI][Seven ways to profile Go programs]] (GolangUK 2016)
+- Dave Cheney, [[https://dave.cheney.net/training#high-performance-go][High performance Go workshop]]
+- Ivan Daniluk, [[https://www.youtube.com/watch?v=KyuFeiG3Y60][Visualizing Concurrency in Go]] (GopherCon 2016)
 
