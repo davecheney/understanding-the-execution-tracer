@@ -12,7 +12,15 @@ import (
 	"sync"
 )
 
+// START OMIT
+
+import "runtime/pprof"
+
 func main() {
+	pprof.StartCPUProfile(os.Stdout)
+	defer pprof.StopCPUProfile()
+	// END OMIT
+
 	var (
 		height  = flag.Int("h", 1024, "height of the output image in pixels")
 		width   = flag.Int("w", 1024, "width of the output image in pixels")
