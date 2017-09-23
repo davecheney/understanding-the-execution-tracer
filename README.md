@@ -22,7 +22,7 @@ This slide deck and supporting material is part of the [_Understanding the Execu
 Th slides will be available at [http://127.0.0.1:3999/understanding-the-execution-tracer.slide](http://127.0.0.1:3999/understanding-the-execution-tracer.slide#1)
 
 # Online
-You can view current version of slides at [https://go-talks.appspot.com/github.com/davecheney/understanding-the-execution-tracer/understanding-the-execution-tracer.slide#1]
+You can view current version of slides at [https://go-talks.appspot.com/github.com/davecheney/understanding-the-execution-tracer/understanding-the-execution-tracer.slide#1](https://go-talks.appspot.com/github.com/davecheney/understanding-the-execution-tracer/understanding-the-execution-tracer.slide#1)
 
 # License and Materials
 
