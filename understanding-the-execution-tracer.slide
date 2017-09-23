@@ -27,9 +27,9 @@ If you have suggestions or corrections to this presentation, please raise [[http
 
 This is a presentation about the Go execution tracer.
 
-The execution tracer was added in Go 1.5 and for the next year or so remained under documented, and under used until last year.
+The execution tracer was developed by [[https://github.com/dvyukov][Dmitry Vyukov]] for Go 1.5 and remained under documented, and under utilised, until last year.
 
-Unlike sample based profiling, the execution tracer is _integrated_ into the Go runtime, so it knows not just what a Go program is doing, but _why_.
+Unlike sample based profiling, the execution tracer is integrated into the Go runtime, so it does just know what a Go program is doing at a particular point in time, but _why_.
 
 * Agenda
 
@@ -417,8 +417,6 @@ And with that running, in another window collect the trace
  2017/09/17 16:09:30 Serializing trace...                  
  2017/09/17 16:09:30 Splitting trace...                    
  2017/09/17 16:09:30 Opening browser. Trace viewer is listening on http://127.0.0.1:60301   
-
-
 
 * Conclusion
 
