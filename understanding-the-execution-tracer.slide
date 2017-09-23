@@ -69,7 +69,7 @@ If we build it, then run it, it generates something like this
 
 So, how long does this program take to generate a 1024 x 1024 pixel image?
 
-The simplest way to know is to use something like `time(1)`.
+The simplest way I know how to do this is to use something like `time(1)`.
 
  % time ./mandelbrot
  real    0m1.654s
@@ -112,7 +112,7 @@ _Note_: We can use `go`run` in this case because the cpu profile will only inclu
 
 The previous slide showed a super cheap way to generate a profile, but it has a few problems.
 
-- If you forget to redirect the output to a file then you'll blow up that terminal session. 😞
+- If you forget to redirect the output to a file then you'll blow up that terminal session. 😞 (hint: `reset(1)` is your friend)
 - If you write anything else to `os.Stdout`, for example, `fmt.Println` you'll corrupt the trace.
 
 The recommended way to use `runtime/pprof` is to [[https://godoc.org/runtime/pprof#hdr-Profiling_a_Go_program][write the trace to a file]]. But, then you have to make sure the trace is stopped, and file is closed before your program stops, including if someone `^C`'s it.
@@ -142,7 +142,7 @@ Now we have a profile, we can use `go`tool`pprof` to analyse it.
  Entering interactive mode (type "help" for commands, "o" for options)
  (pprof) 
 
-In this run we see that the program ran for 1.81s seconds (profile adds a small overhead). We can also see that pprof only captured data for 1.53 seconds, as pprof is sample based, relying on the operating system's `SIGPROF` timer.
+In this run we see that the program ran for 1.81s seconds (profiling adds a small overhead). We can also see that pprof only captured data for 1.53 seconds, as pprof is sample based, relying on the operating system's `SIGPROF` timer.
 
 _Note_: Since Go 1.9 the `pprof` trace contains all the information you need to analyse the trace. You no longer need to also have the matching binary which produced the trace. 🎉
 
@@ -165,7 +165,7 @@ We can use the `top` pprof function to sort functions recorded by the trace
      0.01s  0.65% 99.35%      0.01s  0.65%  image/png.filter /Users/dfc/go/src/image/png/writer.go
      0.01s  0.65%   100%      0.01s  0.65%  runtime.memclrNoHeapPointers /Users/dfc/go/src/runtime/memclr_amd64.s
 
-And we see that the [[examples/mandelbrot-pkg-profile/mandelbrot.go][`main.paint`]] function was on the CPU the most when pprof captured the stack.
+We see that the [[examples/mandelbrot-pkg-profile/mandelbrot.go][`main.paint`]] function was on the CPU the most when pprof captured the stack.
 
 * Analysing the profile (cont.)
 
@@ -192,7 +192,7 @@ _Note_: You can also visualise the profile with the `web` command, which looks [
 
 * Tracing vs Profiling
 
-Hopefully this example shows the limitations of profiling. Profiling told us what it saw, `fillPixel` was doing all the work, and there didn't look like there was much else going on.
+Hopefully this example shows the limitations of profiling. Profiling told us what it saw, `fillPixel` was doing all the work, and there didn't look like there was much that could be done about that.
 
 So now it's a good time to introduce the execution tracer which gives a different view of the same program.
 
@@ -213,7 +213,9 @@ When we run the program, we get a `trace.out` file in the current working direct
  user    0m1.707s
  sys     0m0.020s
 
-And like pprof, there is a tool in the `go` command to analyse the trace.
+* Using the execution tracer (cont.)
+
+Just like pprof, there is a tool in the `go` command to analyse the trace.
 
  % go tool trace trace.out
  2017/09/17 12:41:39 Parsing trace...
@@ -231,7 +233,7 @@ This isn't a surprise, by default `mandelbrot.go` calls `fillPixel` for each pix
 
 Once the image is painted, see the execution switches to writing the `.png` file. This generates garbage on the heap, and so the 
 
-The trace profile offers resolution down to the _microsecond_ level. This is something you just can't get from external profiling.
+The trace profile offers timing resolution down to the _microsecond_ level. This is something you just can't get with external profiling.
 
 * go tool trace
 
@@ -242,11 +244,11 @@ Before we go on there are some things we should talk about the usage of the trac
 - Viewing traces can take a *lot* of memory. Seriously, 4Gb won't cut it, 8Gb is probably the minimum, more is definitely better.
 - If you've installed Go from an OS distribution like Fedora, the support files for the trace viewer may not be part of the main `golang` deb/rpm, they might be in some `-extra` package.
 
-* Using more than on CPU
+* Using more than one CPU
 
 We saw from the previous trace that the program is running sequentially and not taking advantage of the other CPUs on this machine. 
 
-Mandelbrot generation is known as _embarassingly_parallel_ as each pixel is independant of any other, they could all be computed in parallel. So, let's try that.
+Mandelbrot generation is known as _embarassingly_parallel_. Each pixel is independant of any other, they could all be computed in parallel. So, let's try that.
 
  % go build mandelbrot.go
  % time ./mandelbrot -mode px              
@@ -266,13 +268,13 @@ Let's look a the trace.
 As you can see this trace generated _much_ more data.
 
 - It looks like lots of work is being done, but if you zoom right in, there are gaps. This is believed to be the scheduler.
-- While we're using all four cores, because each `fillPixel` is a relatively small amount of work, we're spending a lot of time in overhead.
+- While we're using all four cores, because each `fillPixel` is a relatively small amount of work, we're spending a lot of time in scheduling overhead.
 
 * Batching up work
 
 Using one goroutine per pixel was too fine grained. There wasn't enough work to justify the cost of the goroutine.
 
-Instead let's try processing one row per goroutine.
+Instead, let's try processing one row per goroutine.
 
  % go build mandelbrot.go
  % time ./mandelbrot -mode row
@@ -324,15 +326,15 @@ So that made it worse! More real time, more CPU time. Let's look at the trace to
 
 * Using workers (cont.)
 
-That trace was a mess. There were more workers available, but the seemed to spend all their time fighting over work.
+That trace was a mess. There were more workers available, but the seemed to spend all their time fighting over the work to do.
 
 This is because the channel is unbuffered. An unbuffered channel cannot send until there is someone ready to receive.
 
 - The producer cannot send work until there is a worker ready to receive it.
 - Workers cannot receive work until there is someone ready to send, so they compete with each other when they are waiting.
-- The sender is not priveleged, it cannot take priority over a worker that is already running.
+- The sender is not privileged, it cannot take priority over a worker that is already running.
 
-What we see here is a lot of latency introduced by the unbuffered channel. There are lots of stops and starts inside hte scheduler, and potentially locks and mutexes while sleeping to wait for work, this is why we see the `sys` time higher.
+What we see here is a lot of latency introduced by the unbuffered channel. There are lots of stops and starts inside the scheduler, and potentially locks and mutexes while waiting for work, this is why we see the `sys` time higher.
 
 * Using buffered channels
 
@@ -417,6 +419,25 @@ And with that running, in another window collect the trace
  2017/09/17 16:09:30 Serializing trace...                  
  2017/09/17 16:09:30 Splitting trace...                    
  2017/09/17 16:09:30 Opening browser. Trace viewer is listening on http://127.0.0.1:60301   
+
+* Simulating overload
+
+Let's increase the rate to 5 requests per second.
+
+ hey -c 5 -n 1000 -q 5 http://127.0.0.1:8080/mandelbrot
+
+And with that running, in another window collect the trace
+
+ % curl -o trace.out http://127.0.0.1:8080/debug/pprof/trace?seconds=5                        
+   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current                                      
+                                 Dload  Upload   Total   Spent    Left  Speed                                        
+ 100 66169    0 66169    0     0  13233      0 --:--:--  0:00:05 --:--:-- 17390                                       
+ % go tool trace trace.out                                                                    
+ 2017/09/17 16:09:30 Parsing trace...                      
+ 2017/09/17 16:09:30 Serializing trace...                  
+ 2017/09/17 16:09:30 Splitting trace...                    
+ 2017/09/17 16:09:30 Opening browser. Trace viewer is listening on http://127.0.0.1:60301   
+
 
 * Conclusion
 
