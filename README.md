@@ -28,4 +28,6 @@ You can view current version of slides at [https://go-talks.appspot.com/github.c
 
 This presentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/) licence.
 
+The code samples included in this presentation are copywrite their respective authors.
+
 You are encouraged to remix, transform, or build upon the material, providing you give appropriate credit and distribute your contributions under the same license.
