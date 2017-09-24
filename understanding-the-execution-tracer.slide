@@ -459,4 +459,5 @@ That's it! Now you know everything about the execution tracer.
 - Dave Cheney, [[https://www.youtube.com/watch?v=2h_NFBFrciI][Seven ways to profile Go programs]] (GolangUK 2016)
 - Dave Cheney, [[https://dave.cheney.net/training#high-performance-go][High performance Go workshop]]
 - Ivan Daniluk, [[https://www.youtube.com/watch?v=KyuFeiG3Y60][Visualizing Concurrency in Go]] (GopherCon 2016)
+- Kavya Joshi, [[https://www.youtube.com/watch?v=KBZlN0izeiY][Understanding Channels]] (GopherCon 2017)
 
