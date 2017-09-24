@@ -442,9 +442,9 @@ And with that running, in another window collect the trace
 
 * Sieve of Eratosthenes
 
-The concurrent [[examples/sieve/sieve.go][prime sieve]] is one of the first Go programs written.
+The concurrent [[examples/sieve/main.go][prime sieve]] is one of the first Go programs written.
 
-Ivan Daniluk [[http://divan.github.io/posts/go_concurrency_visualize/][wrote a great post on visualising] it.
+Ivan Daniluk [[http://divan.github.io/posts/go_concurrency_visualize/][wrote a great post on visualising]] it.
 
 Let's take a look at its operation using the execution tracer.
 
