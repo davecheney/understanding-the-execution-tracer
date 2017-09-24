@@ -16,7 +16,7 @@ This slide deck and supporting material is part of the [_Understanding the Execu
 
 3. Run the present tool
  ```
- cd high-performance-go-workshop && present
+ cd understanding-the-execution-tracer && present
  ```
 
 Th slides will be available at [http://127.0.0.1:3999/understanding-the-execution-tracer.slide](http://127.0.0.1:3999/understanding-the-execution-tracer.slide#1)
