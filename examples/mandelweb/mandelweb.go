@@ -17,6 +17,9 @@ import (
 
 func main() {
 	http.HandleFunc("/mandelbrot", mandelbrot)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/mandelbrot", http.StatusPermanentRedirect)
+	})
 	log.Println("listening on http://127.0.0.1:8080/")
 	http.ListenAndServe(":8080", logRequest(http.DefaultServeMux))
 }
